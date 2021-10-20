@@ -1,0 +1,10 @@
+
+    <% if(err_msg.length > 0) { %>
+      <ul class="err_list">
+        <% for(let msg of err_msg) { %>
+          <li>
+            <%= msg %>
+          </li>
+        <% } %>
+      </ul>
+    <% } %>

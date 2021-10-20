@@ -1,0 +1,44 @@
+
+.product-form textarea
+{
+  height: 8em;
+}
+
+.reviews__list
+{
+  list-style: none;
+  padding: 0px;
+}
+
+.reviews__list p
+{
+  max-width: 25em;
+  margin: auto;
+}
+
+.users_rating,
+.users_name
+{
+  display: inline-block;
+  margin-bottom: 0px;
+}
+
+.users_name img
+{
+  max-width: 2em;
+  max-height: 2em;
+  border-radius: 50%;
+  border: black solid 1px;
+  transform: translateY(50%);
+}
+
+.reviews__list .rating
+{
+  font-size: 1.3em;
+}
+.reviews__list .date
+{
+  font-size: 0.8em;
+  margin-bottom: 1em;
+  font-weight: bold;
+}

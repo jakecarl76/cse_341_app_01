@@ -1,0 +1,64 @@
+<%- include('../includes/head.ejs') %>
+<link href="/css/cart.css" rel="stylesheet" >
+<link rel="stylesheet" href='/css/product-card.css'>
+</head>
+
+<body>
+  <%- include('../includes/nav.ejs') %>
+  <% let order_total = 0.00 %>
+
+  <main class="centered">
+    <%-include('../includes/msgs.ejs') %>
+    <% if (items.length > 0) { %>
+      <h2> Cart Items</h2>
+      <ul class="cart__list">
+        <% items.forEach(item => { %>
+          <li>
+            <h3><%= item.product_id.title %> </h3>
+            <a href="/products/<%=item.product_id._id%>">
+              <img src="<%= item.product_id.img_link %>" alt="Image of <%= item.product_id.title %>">
+            </a>
+            <div>
+              <% for(let i = 0; i < 5; i++)
+                  {
+                    if( i < item.product_id.rating)
+                    {
+                      %><span class="rating gold_star" >&#9733;</span><%
+                    }
+                    else
+                    {
+                      %><span class="rating">&#9734;</span><%
+                    }
+                  } %>
+            </div>
+            <% let tmp_total = Number(item.product_id.price) * Number(item.qnty); %>
+            <% order_total += tmp_total %>
+            <p>$<%= item.product_id.price %> @ (<%= item.qnty %>) : $<%= tmp_total %> </p>
+
+
+
+            <form action="/cart-delete-item" method="POST">
+              <!-- Include csrf token:-->
+              <input type="hidden" name="_csrf" value="<%= csrf_token %>">
+              <input type="hidden" name="item_id" value="<%= item.product_id._id %>" >
+              <button class="btn" type="submit">Remove from cart</button>
+            </form>
+          </li>
+        <% }) %>
+      </ul>
+      <h2>Total Order: $<%= order_total %></h2>
+      <form action="/create-order" method="POST">
+        <!-- Include csrf token:-->
+        <input type="hidden" name="_csrf" value="<%= csrf_token %>">
+        <input type="hidden" name="item_id" value="<%= items._id %>" >
+        <button class="big_btn" type="submit">Order Now!</button>
+      </form>
+    <% }else{ %>
+      <h2>Your cart is empty</h2>
+    <% } %>
+
+
+  </main>
+  
+  
+  <%- include('../includes/end.ejs') %>

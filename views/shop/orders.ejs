@@ -1,0 +1,37 @@
+<%- include('../includes/head.ejs') %>
+<link href="/css/orders.css" rel="stylesheet">
+</head>
+
+<body>
+  <%- include('../includes/nav.ejs') %>
+  <main>
+    <%-include('../includes/msgs.ejs') %>
+    <% if(orders.length <= 0) { %>
+      <h1> You have no orders.</h1>
+    <% }else { %>
+      <h1>Your Orders</h1>
+      <ul class="order__liset">
+        <% orders.forEach( order => { %>
+          <li class="order">
+            <h1># <%= order._id %></h1>
+            <p>Ordered on: <%= order.order_date.toDateString() %></p>
+            <p><strong>Total: $<%= order.order_total %></strong></p>
+            <h2>Order Details</h2>
+            <ul>
+              <% order.products.forEach( item => { %>
+                <li>
+                  <% let sub_total = Number(item.qnty) * Number(item.product_data.price) %>
+                  <a href="/products/<%= item.product_data._id %>"><%= item.product_data.title %></a>
+                   (<%= item.qnty %>) @ $<%= item.product_data.price %> 
+                  <strong>Subtotal: $<%= sub_total %></strong>
+                </li>
+              <% }) %>
+            </ul>
+          </li>
+        <% }); %>
+      </ul>
+    <% } %>
+  </main>
+  
+  
+  <%- include('../includes/end.ejs') %>

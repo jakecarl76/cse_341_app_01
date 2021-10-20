@@ -1,0 +1,61 @@
+<%- include('../includes/head.ejs') %>
+  <link rel="stylesheet" href='/css/forms.css'>
+</head>
+<body>
+  <%- include('../includes/nav.ejs') %>
+  <main>
+    <%- include('../includes/msgs.ejs') %>
+    <form class="product-form" action='/admin/<% if(edit_mode){ %>edit<% }else{ %>add<% } %>-product' method="POST">
+      <!-- Include csrf token:-->
+      <input type="hidden" name="_csrf" value="<%= csrf_token %>">
+      <label for="title">Title</label>
+      <input  class="<%= input_err_ids.find( id => id === 'title') ? 'invalid' : '' %>"
+       type="text" id="title" name="title"
+       value="<% if(edit_mode || add_mode){ %><%= item.title %><% } %>">
+      <label for="img_link">Image Link</label>
+      <input  class="<%= input_err_ids.find( id => id === 'img_link') ? 'invalid' : '' %>"
+       type="text" id="img_link" name="img_link"
+      value="<% if(edit_mode || add_mode){ %><%= item.img_link %><% } %>">
+      <label for="item_price">Price</label>
+      <input class="<%= input_err_ids.find( id => id === 'item_price') ? 'invalid' : '' %>"
+       type="number" id="item_price" name="item_price" step="0.01"
+      value="<% if(edit_mode || add_mode){ %><%= item.price %><% } %>">
+      <label for="item_desc">Description</label>
+      <textarea class="<%= input_err_ids.find( id => id === 'item_desc') ? 'invalid' : '' %>"
+         id="item_desc" name="item_desc"
+       ><% if(edit_mode || add_mode){ %><%= item.desc %><% } %></textarea>
+
+      <label for="item_rating_0" class="zero_rating">&#9746;</label>
+      <input type="radio" id="item_rating_0" name="item_rating" class="hidden star_radio" value="0" 
+       <% if(edit_mode || add_mode){ if(item.rating == 0){%> checked <% } }else{ %> checked<% } %> >
+      
+      <label for="item_rating_1" class="star_radio"></label>
+      <input type="radio" id="item_rating_1" name="item_rating" class="hidden star_radio" value="1"
+      <% if(edit_mode || add_mode && item.rating == 1){%> checked <% }%> >
+      
+      <label for="item_rating_2" class="star_radio"></label>
+      <input type="radio" id="item_rating_2" name="item_rating" class="hidden star_radio" value="2"
+      <% if(edit_mode || add_mode && item.rating == 2){%> checked <% }%> >
+      
+      <label for="item_rating_3" class="star_radio"></label>
+      <input type="radio" id="item_rating_3" name="item_rating" class="hidden star_radio" value="3"
+      <% if(edit_mode || add_mode && item.rating == 3){%> checked <% }%> >
+      
+      <label for="item_rating_4" class="star_radio"></label>
+      <input type="radio" id="item_rating_4" name="item_rating" class="hidden star_radio" value="4"
+      <% if(edit_mode || add_mode && item.rating == 4){%> checked <% }%> >
+      
+      <label for="item_rating_5" class="star_radio"></label>
+      <input type="radio" id="item_rating_5" name="item_rating" class="hidden" value="5"
+      <% if(edit_mode || add_mode && item.rating == 5){%> checked <% }%> >
+      
+      <div>
+        <p>Click on a star to rate this product.</p>
+      </div>
+      
+      <% if(edit_mode || add_mode){%><input type="hidden" name="item_id" value="<%= item._id %>"><% }%>
+      <button type="submit"><% if(edit_mode){%>Update<% }else{ %>Add<% } %> Prouduct</button>
+    </form>
+  </main>
+
+<%- include('../includes/end.ejs') %>

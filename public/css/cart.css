@@ -1,0 +1,26 @@
+.cart__list
+{
+  list-style: none;
+  border: solid black 1px;
+  border-radius: 10px;
+  padding: 10px;
+  width: 90%;
+  max-width: 500px;
+  min-width: 12em;
+  margin: 0 auto;
+}
+
+.cart__list li
+{
+  box-shadow: 5px 5px 3px var(--shadow-color);
+  border: solid black 1px;
+  padding: 10px;
+  margin: 10px;
+}
+
+.cart__list img
+{
+  max-width: 100px;
+  max-height: 100px;
+  object-fit: cover;
+}

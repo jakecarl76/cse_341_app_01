@@ -1,0 +1,74 @@
+<%- include('../includes/head.ejs') %>
+
+<link rel="stylesheet" href='/css/product-card.css'>
+<link rel="stylesheet" href='/css/review.css'>
+</head>
+
+<body>
+  <%- include('../includes/nav.ejs') %>
+
+  <main class="centered">
+    <%-include('../includes/msgs.ejs') %>
+    <h1><%= item.title %></h1>
+    <hr>
+    <div>
+      <img src="<%= item.img_link %>" alt="<%= item.title %>">
+    </div>
+    <div>
+      <% for(let i = 0; i < 5; i++)
+          {
+            if( i < item.rating)
+            {
+              %><span class="rating gold_star" >&#9733;</span><%
+            }
+            else
+            {
+              %><span class="rating">&#9734;</span><%
+            }
+          } %>
+    </div>
+
+    <h2>$<%= item.price %></h2>
+    <p><%= item.desc %></p>
+    
+    
+    <%- include('../includes/add-to-cart.ejs') %>
+
+    <h2>User Reviews</h2>
+    <hr>
+    <div>
+      <% if (reviews.length > 0) { %>
+        <ul class="reviews__list">
+          <% for(const review of reviews) { %>
+            <li>
+              <h3 class="users_name"><img src="<%= review.user_id.user_img %>" 
+                alt="<%= review.user_id.username %>'s profile picture"> 
+                <%= review.user_id.username %></h3>
+              <div class="users_rating">
+                <% for(let i = 0; i < 5; i++)
+                    {
+                      if( i < review.rating)
+                      {
+                        %><span class="rating gold_star" >&#9733;</span><%
+                      }
+                      else
+                      {
+                        %><span class="rating">&#9734;</span><%
+                      }
+                    } %>
+              </div>
+              <p class="date"><%= review.date.toDateString() %></p>
+              <p>
+                <%- review.review %>
+              </p>
+            </li>
+          <% } %>
+        </ul>
+      <% } else { %>
+        <p>Be the first one to review this product!</p>
+      <% } %>
+      <a href="/product/review/<%= item._id %>"> Review Now!</a>
+    </div>
+  </main>
+  
+  <%- include('../includes/end.ejs') %>

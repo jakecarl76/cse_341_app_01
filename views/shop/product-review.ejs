@@ -1,0 +1,71 @@
+<%- include('../includes/head.ejs') %>
+<link rel="stylesheet" href='/css/forms.css'>
+<link rel="stylesheet" href='/css/review.css'>
+<link rel="stylesheet" href='/css/product-card.css'>
+</head>
+
+<body>
+  <%- include('../includes/nav.ejs') %>
+
+  <main class="centered">
+    <%-include('../includes/msgs.ejs') %>
+    <h1><%= item.title %></h1>
+    <hr>
+    <div>
+      <img src="<%= item.img_link %>" alt="<%= item.title %>">
+    </div>
+
+    <h2>$<%= item.price %></h2>
+    <p><%= item.desc %></p>
+    <div>
+      <% for(let i = 0; i < 5; i++)
+          {
+            if( i < item.rating)
+            {
+              %><span class="rating gold_star" >&#9733;</span><%
+            }
+            else
+            {
+              %><span class="rating">&#9734;</span><%
+            }
+          } %>
+    </div>
+    <form class="product-form" action='/product/post-review' method="POST">
+      <!-- Include csrf token:-->
+      <input type="hidden" name="_csrf" value="<%= csrf_token %>">
+
+      <div>
+        <p>Click on a star below to rate this product.</p>
+      </div>
+
+      <label for="item_rating_0" class="zero_rating">&#9746;</label>
+      <input type="radio" id="item_rating_0" name="item_rating" class="hidden star_radio" value="0" checked>
+      
+      <label for="item_rating_1" class="star_radio"></label>
+      <input type="radio" id="item_rating_1" name="item_rating" class="hidden star_radio" value="1">
+      
+      <label for="item_rating_2" class="star_radio"></label>
+      <input type="radio" id="item_rating_2" name="item_rating" class="hidden star_radio" value="2" >
+      
+      <label for="item_rating_3" class="star_radio"></label>
+      <input type="radio" id="item_rating_3" name="item_rating" class="hidden star_radio" value="3">
+      
+      <label for="item_rating_4" class="star_radio"></label>
+      <input type="radio" id="item_rating_4" name="item_rating" class="hidden star_radio" value="4">
+      
+      <label for="item_rating_5" class="star_radio"></label>
+      <input type="radio" id="item_rating_5" name="item_rating" class="hidden" value="5" >
+      
+      <p>Tell us what you think about this product.</p>
+      <label for="user_review">Your Review</label>
+      <textarea id="user_review" name="user_review"></textarea>
+
+      <input type="hidden" name="item_id" value="<%= item._id %>">
+
+      <input type="submit" class="big_btn" value="Post My Review!">
+
+    </form>
+    
+  </main>
+  
+  <%- include('../includes/end.ejs') %>

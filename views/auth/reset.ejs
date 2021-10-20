@@ -1,0 +1,19 @@
+<%- include('../includes/head.ejs') %>
+  <link rel="stylesheet" href='/css/forms.css'>
+</head>
+<body>
+  <%- include('../includes/nav.ejs') %>
+  <main>
+    <%-include('../includes/msgs.ejs') %>
+    <form class="product-form" action='/reset' method="POST">
+      <!-- Include csrf token:-->
+      <input type="hidden" name="_csrf" value="<%= csrf_token %>">
+      
+      <label for="email">Email</label>
+      <input type="email" id="email" name="email" >
+      
+      <button type="submit">Reset Password</button>
+    </form>
+  </main>
+
+<%- include('../includes/end.ejs') %>
