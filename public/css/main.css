@@ -1,16 +1,83 @@
 :root
 {
-  --main-color: #1b584e;
-  --secondary-color: #e4c357;
+  --main-color: #1b1b1b;
+  --secondary-color: #e9ac66;
   --active-color: rgb(255, 112, 87);
-  --shadow-color: gray;
+  --shadow-color: rgb(87, 72, 32);
+  --bg-color: #312f2b;
+  --txt-color: #c49c61;
 }
 
 body
 {
+  background-color: var(--bg-color);
+  color: var(--txt-color);
   padding: 0;
   margin: 0;
   font-family: sans-serif;
+}
+
+hr
+{
+  border-color: var(--secondary-color);
+}
+
+p
+{
+  font-family: helvetica, sans-serif;
+  max-width: 500px;
+  margin: auto;
+}
+
+textarea,
+input
+{
+  background-color: var(--main-color);
+  color: var(--secondary-color);
+  border: solid 1px var(--secondary-color);
+}
+
+.a_btn,
+input[type=submit],
+input[type=button]
+{
+  background-color: var(--bg-color);
+  border: solid 1px var(--secondary-color);
+  color: var(--secondary-color);
+  cursor: pointer;
+}
+
+.a_btn:hover,
+input[type=submit]:hover,
+input[type=button]:hover
+{
+  background-color: var(--secondary-color);
+  border: solid 1px var(--main-color);
+  color: var(--main-color);
+}
+
+
+.a_btn:active,
+input[type=submit]:active,
+input[type=button]:active
+{
+  background-color: var(--active-color);
+  border: solid 1px var(--main-color);
+  color: var(--main-color);
+}
+
+a
+{
+  color: var(--txt-color);
+}
+a:hover:visited,
+a:hover
+{
+  color: var(--active-color);
+}
+a:visited
+{
+  color: var(--txt-color);
 }
 
 main
@@ -42,6 +109,7 @@ main
   list-style: none;
   padding: 0;
   display: flex;
+  align-items: center;
 }
 .main-header__item
 {
@@ -73,10 +141,22 @@ main
   color: red;
 }
 
+
+.msg_list
+{
+  border: solid greeb 1px;
+  box-shadow: 0px 0px 10px green;
+  border-radius: 15px;
+}
+
+.msg_list li::marker
+{
+  color: green;
+}
+
 .invalid
 {
-  background-color: pink;
-  border: solid red 1px;
+  border: solid red 3px;
 }
 
 .centered
@@ -84,15 +164,226 @@ main
   text-align: center;
 }
 
+.centered-left-aligned
+{
+  margin: 0 auto;
+  text-align: left;
+  width: 80%;
+  min-width: 210px;
+  max-width: 500px;
+}
+
+.hidden
+{
+  display: none;
+}
+
+input.link_btn,
 .link_btn
 {
-  background-color: var(--main-color);
+  background-color: transparent;
+  border: none;
   color: white;
   border: none;
   font-size: 1em;
   cursor: pointer;
 }
-.link_btn:hover
+input.link_btn:hover
 {
   color: var(--secondary-color);
+  border: none;
+  background-color: transparent;
+}
+input.link_btn:active
+{
+  color: var(--secondary-color);
+  border: none;
+  background-color: transparent;
+}
+
+.sellers_name
+{
+  margin: 1em;
+  margin-top: -1em;
+  vertical-align: text-top;
+  font-weight: bold;
+}
+
+.minor_title
+{
+  margin: 0 auto;
+}
+
+.sellers_name img,
+.users_name img
+{
+  width: 2em;
+  height: 2em;
+  border-radius: 50%;
+  box-shadow: 5px 5px 5px var(--shadow-color);
+  transform: translateY(50%);
+  object-fit: cover;
+  vertical-align: super;
+}
+
+.user_img
+{
+  width: 2em;
+  height: 2em;
+  border-radius: 50%;
+  box-shadow: 5px 5px 5px var(--shadow-color);
+  object-fit: cover;
+  vertical-align: text-bottom;
+}
+
+.user_profile_img
+{
+  max-width: 400px;
+}
+
+.in-stock
+{
+
+}
+
+.low-stock
+{
+  color: orange;
+  font-weight: bold;
+}
+.no-stock
+{
+  color: red;
+  font-weight: bold;
+}
+
+.main_title
+{
+  font-family: Geneva, sans-serif;
+  font-size: 10vw;
+  text-align: center;
+  color: var(--secondary-color);
+  text-shadow: 0 0 10px var(--txt-color);
+  text-decoration: underline;
+  animation: main_title 4s 1;
+}
+
+.title_page_display
+{
+  text-align: right;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 1200px;
+  margin-bottom: 400px;
+}
+
+.title_page_display p
+{
+  margin: 10px;
+  max-width: 500px;
+  background-color: rgba(0, 0, 0, 0.75);
+  padding: 10px;
+  border-radius: 0 0  10px 10px;
+  margin-top: 0px;
+  
+}
+.title_page_display h2
+{
+  margin: 10px;
+  max-width: 500px;
+  background-color: rgba(0, 0, 0, 0.75);
+  padding: 10px;
+  border-radius: 10px 10px 0 0;
+  margin-bottom: 0px;
+  
+}
+
+.title_page_display_land
+{
+  min-height: 6em;
+  display: flex;
+  align-items: center;
+  align-content:space-around;;
+  justify-content:center;
+}
+
+
+.main_article_right,
+.main_article_right h2
+{
+  text-align: right;
+}
+.main_article_right p,
+.main_article_right h2
+{
+  margin-left: auto;
+}
+
+.articlebg1
+{
+  background-image: url('https://www.leisureopportunities.co.uk/images/HIGH19944_796574.jpg');
+  min-height: 400px;
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-attachment:fixed;
+}
+
+
+.articlebg2
+{
+  background-image: url('https://miro.medium.com/max/1920/1*lpOpfVaPPtitxox5c68fmA.jpeg');
+  min-height: 400px;
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-attachment:fixed;
+}
+
+
+.articlebg3
+{
+  background-image: url('https://buddhaweekly.com/wp-content/uploads/Buddha-Weekly-Meditating-in-nature-with-virtual-reality-headset-Buddhism.jpg');
+  min-height: 400px;
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-attachment:fixed;
+}
+
+
+.main_article_left
+{
+  text-align: left;
+}
+
+@media (max-width: 400px)
+{
+  .main_article_right
+  {
+    text-align: left;
+    width: 100vw;
+    height: 100%;
+  }
+  .main_article_left
+  {
+    text-align: left;
+    width: 100vw;
+    height: 100%;
+  }
+}
+
+.detail_img
+{
+  max-width: 100%;
+}
+
+@keyframes main_title
+{
+  0%{color: var(--bg-color);
+    text-shadow: 0 0 -1px var(--txt-color);;}
+  100%{color: var(--secondary-color);
+       text-shadow: 0 0 10px var(--txt-color);}
+
 }

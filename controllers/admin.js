@@ -55,7 +55,7 @@ exports.post_add_product = (req, resp, next) => {
         price: req.body.item_price,
         img_link: tmp_img,
         desc: req.body.item_desc,
-        rating: req.body.item_rating},
+        stock: req.body.item_stock},
         page_title: 'Edit A Product',
         path: '/admin/edit-product',
         edit_mode: false,
@@ -69,7 +69,7 @@ exports.post_add_product = (req, resp, next) => {
                                price: req.body.item_price,
                                img_link: tmp_img,
                                desc: req.body.item_desc,
-                               rating: req.body.item_rating,
+                               stock: req.body.item_stock,
                                user_id: req.user._id
   });
 
@@ -118,7 +118,7 @@ exports.post_edit_product = (req, resp, next) => {
   const item_img = req.body.img_link;
   const item_price = req.body.item_price;
   const item_desc = req.body.item_desc;
-  const item_rating = req.body.item_rating;
+  const item_stock = req.body.item_stock;
 
   //check for validation errs
   const v_errs = validationResult(req);
@@ -138,7 +138,7 @@ exports.post_edit_product = (req, resp, next) => {
         price: req.body.item_price,
         img_link: item_img,
         desc: req.body.item_desc,
-        rating: req.body.item_rating,
+        stock: req.body.item_stock,
         _id: item_id},
         page_title: 'Edit A Product',
         path: '/admin/edit-product',
@@ -163,7 +163,7 @@ exports.post_edit_product = (req, resp, next) => {
     product.price = item_price;
     product.img_link = item_img;
     product.desc = item_desc;
-    product.rating = item_rating;
+    product.stock = item_stock;
     return product.save();
   })
   .then(result => {

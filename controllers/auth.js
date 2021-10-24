@@ -4,18 +4,21 @@ const bcrypt = require('bcryptjs'); //3rd party pkg
 //import email pkgs
 const nodemailer = require('nodemailer');
 const sendgrid = require('nodemailer-sendgrid-transport');
+const sendmail_api_key = process.env.MAIL_KEY || require('../../hidden/app_01/mail_key').mail_key
 
 //import part of validation pkg for checking for errors
 const { validationResult } = require('express-validator/check')
 
 const User = require('../models/user');
 
+console.log("MAIL_KEY: " + sendmail_api_key);
+
 //set up email
 //creating sendgrid() obj creates a config for nodemailer to use to create the transport
 const transporter = nodemailer.createTransport(sendgrid({
   //api_user: , //don't need since using api_key
   auth: {
-    api_key: ""
+    api_key: sendmail_api_key
   }
 }));
 
@@ -46,10 +49,9 @@ exports.post_login = (req, resp, next) => {
   //get login info
   const email = req.body.email;
   const pword = req.body.pword;
-
   //get login validation info
   const v_errs = validationResult(req);
-
+  
   //check if validation errors
   if(!v_errs.isEmpty())
   {
@@ -66,7 +68,7 @@ exports.post_login = (req, resp, next) => {
   .then(user => { //user is a mongoose model with all mongoose funcs
     //check if user found
     if(!user)
-    {
+    { 
       //use connect-flash to pass a temp err msg via session
       req.flash('err', 'Invalid email or password.');
       return resp.render('auth/login', { page_title: 'Login',
@@ -94,10 +96,10 @@ exports.post_login = (req, resp, next) => {
       }
       //else, bad pword/username redirct back to login again
       //use connect-flash to pass a temp err msg via session
-      req.flash('err', 'Invalid email or password.');
       resp.render('auth/login', { page_title: 'Login',
         path: '/login',
-        input_email: req.body.email
+        input_email: req.body.email,
+        err_msg: ['Invalid email or password.']
       });
 
     }).catch(err => {
@@ -127,7 +129,10 @@ exports.post_logout = (req, resp, next) => {
 exports.get_signup = (req, resp, next) => {
   resp.render('auth/signup', { page_title: 'Signup for Products!',
     path: '/signup',
-    input_err_ids: []
+    input_err_ids: [],
+    email: "",
+    uname: "",
+    uimg: ""
   });
 }
 
@@ -156,7 +161,10 @@ exports.post_signup = (req, resp, next) => {
     return resp.status(422).render('auth/signup', { page_title: 'Signup for Products!',
      path: '/signup',
      err_msg: err_arr,
-     input_err_ids: input_err_ids
+     input_err_ids: input_err_ids,
+     email: email,
+     uname: username,
+     uimg: img
     });
   }
 
@@ -245,6 +253,9 @@ exports.post_reset = (req, resp, next) => {
       req.flash('err', "Please enter a vaild email.");
       resp.redirect('/reset');
       }
+
+      //log token for grading:
+      console.log("Reset token is: " + reset_token);
 
       //store user's token
       user.password_token = reset_token;
@@ -339,3 +350,346 @@ exports.post_new_password = (req, resp, next) => {
     return resp.redirect('/');
   });
 };
+
+
+
+exports.get_user_profile = (req, resp, next) => {
+  resp.render('auth/user_profile',
+  {
+    page_title: "My Profile",
+    input_err_ids: [],
+    path: '/user-profile',
+    user_obj: req.session.user
+  });
+};
+
+exports.post_change_email = (req, resp, next) => {
+  //check for validation errs
+  const v_errs = validationResult(req);
+
+  if(!v_errs.isEmpty())
+  { 
+    let input_err_ids = [];
+    let err_arr = [];
+    for (err of v_errs.array())
+    {
+      err_arr.push(err.msg);
+      input_err_ids.push(err.param);
+    }
+
+    //status 422 input errors
+    return resp.status(422).render('auth/user_profile',
+      {
+        path: '/user_profile',
+        page_title: 'User Profile',
+        err_msg: err_arr,
+        input_err_ids: input_err_ids,
+        user_obj: req.session.user
+      });
+  }//END IF ARE ERRS
+  
+  //get email
+  const input_email = req.body.email;
+
+  //make sure email is unique, ie not used by someone else
+  User.findOne({email: input_email})
+  .then(user => {
+
+    //if user, email already taken
+    if(user)
+    {
+      return resp.render('auth/user_profile',
+      {
+        path: '/user-profile',
+        page_title: 'User Profile',
+        err_msg: ["Sorry, that email is already used by another account."],
+        input_err_ids: ['email'],
+        user_obj: req.session.user
+      });
+    }
+    
+    //find user to set users email to new email
+    let tmp_email = req.session.user.email
+    
+    User.findOne({_id: req.session.user._id})
+    .then(curr_user => {
+      
+      //check found user ok
+      if(!curr_user)
+      { 
+        throw new Error("User not found!");
+      }
+
+      curr_user.email = input_email;
+      curr_user.save()
+      .then(result => {
+        //update sess user
+        req.session.user = curr_user;
+        
+        resp.render('auth/user_profile',
+        {
+          path: '/user-profile',
+          page_title: 'User Profile',
+          err_msg: [],
+          msgs: ["Email successfully updated."],
+          input_err_ids: [],
+          user_obj: req.session.user
+        });
+      })
+      .catch(err => {
+        throw new Error("Error saving new email: " + err);
+      });
+
+    })
+    .catch(err => {
+      throw new Error("Error saving new email: " + err);
+    });//END GET CURR USER
+
+    
+  })
+  .catch(err => {
+    console.log(err);
+    resp.redirect('/500');
+  });
+  
+
+};//END POST CHANGE EMAIL
+
+
+exports.post_change_username = (req, resp, next) => {
+  //check for validation errs
+  const v_errs = validationResult(req);
+
+  if(!v_errs.isEmpty())
+  { 
+    let input_err_ids = [];
+    let err_arr = [];
+    for (err of v_errs.array())
+    {
+      err_arr.push(err.msg);
+      input_err_ids.push(err.param);
+    }
+
+    //status 422 input errors
+    return resp.status(422).render('auth/user_profile',
+      {
+        path: '/user_profile',
+        page_title: 'User Profile',
+        err_msg: err_arr,
+        input_err_ids: input_err_ids,
+        user_obj: req.session.user
+      });
+  }//END IF ARE ERRS
+  
+  //get email
+  const input_username = req.body.uname;
+
+  //make sure username is unique, ie not used by someone else
+  User.findOne({username: input_username})
+  .then(user => {
+
+    //if user, email already taken
+    if(user)
+    {
+      return resp.render('auth/user_profile',
+      {
+        path: '/user-profile',
+        page_title: 'User Profile',
+        err_msg: ["Sorry, that username is already used by another account."],
+        input_err_ids: ['uname'],
+        user_obj: req.session.user
+      });
+    }
+    
+    //find user to set users username to new username
+    User.findOne({_id: req.session.user._id})
+    .then(curr_user => {
+      
+      //check found user ok
+      if(!curr_user)
+      { console.log(curr_user);
+        throw new Error("User not found!");
+      }
+
+      curr_user.username = input_username;
+      curr_user.save()
+      .then(result => {
+        //update sess user
+        req.session.user = curr_user;
+        
+        resp.render('auth/user_profile',
+        {
+          path: '/user-profile',
+          page_title: 'User Profile',
+          err_msg: [],
+          msgs: ["Username successfully updated."],
+          input_err_ids: [],
+          user_obj: req.session.user
+        });
+      })
+      .catch(err => {
+        throw new Error("Error saving new username: " + err);
+      });
+
+    })
+    .catch(err => {
+      throw new Error("Error saving new username: " + err);
+    });//END GET CURR USER
+
+    
+  })
+  .catch(err => {
+    console.log(err);
+    resp.redirect('/500');
+  });
+  
+
+};//END POST CHANGE USERNAME
+
+
+exports.post_change_user_image = (req, resp, next) => {
+  
+  //get Img url
+  const input_url = req.body.uimg;
+
+  //find user to set users username to new username
+  User.findOne({_id: req.session.user._id})
+  .then(curr_user => {
+    
+    //check found user ok
+    if(!curr_user)
+    { console.log(curr_user);
+      throw new Error("User not found!");
+    }
+
+    curr_user.user_img = input_url;
+    curr_user.save()
+    .then(result => {
+      //update sess user
+      req.session.user = curr_user;
+      
+      resp.render('auth/user_profile',
+      {
+        path: '/user-profile',
+        page_title: 'User Profile',
+        err_msg: [],
+        msgs: ["Profile Image successfully updated."],
+        input_err_ids: [],
+        user_obj: req.session.user
+      });
+    })
+    .catch(err => {
+      throw new Error("Error saving new user image URL: " + err);
+    });
+
+  })
+  .catch(err => {
+    console.log(err);
+    resp.redirect('/500');
+  });//END GET CURR USER
+
+
+};//END POST CHANGE User IMAGE
+
+
+exports.post_change_user_password = (req, resp, next) => {
+  //check for validation errs
+  const v_errs = validationResult(req);
+
+  if(!v_errs.isEmpty())
+  { 
+    let input_err_ids = [];
+    let err_arr = [];
+    for (err of v_errs.array())
+    {
+      err_arr.push(err.msg);
+      input_err_ids.push(err.param);
+    }
+
+    //status 422 input errors
+    return resp.status(422).render('auth/user_profile',
+      {
+        path: '/user_profile',
+        page_title: 'User Profile',
+        err_msg: err_arr,
+        input_err_ids: input_err_ids,
+        user_obj: req.session.user
+      });
+  }//END IF ARE ERRS
+  
+  //get email
+  const curr_pwd = req.body.curr_pwd;
+
+  //check current password
+
+  //getuser by id
+  User.findById(req.session.user._id)
+  .then(user => {
+
+    //if user, email already taken
+    if(!user)
+    {
+      throw new Error("Error: Can't find current session's user!");
+    }
+    
+    //compare passwords
+    bcrypt.compare(curr_pwd, user.password)
+    .then(hash_res => {
+      
+      //password incorrect
+      if(!hash_res)
+      { 
+        return resp.render('auth/user_profile',
+        {
+          path: '/user-profile',
+          page_title: 'User Profile',
+          err_msg: ["Password invalid."],
+          input_err_ids: ['curr_pwd'],
+          user_obj: req.session.user
+        });
+      }
+
+      //save new pwd
+      bcrypt.hash(req.body.pwd, 12)
+      .then(hashed_pwd => {
+        user.password = hashed_pwd;
+      user.save()
+      .then(result => {
+        //update sess user
+        req.session.user = user;
+        
+        resp.render('auth/user_profile',
+        {
+          path: '/user-profile',
+          page_title: 'User Profile',
+          err_msg: [],
+          msgs: ["Password successfully updated."],
+          input_err_ids: [],
+          user_obj: req.session.user
+        });
+      })
+      .catch(err => {
+        throw new Error("Error saving new Password: " + err);
+      });//END SAVE CURR USER
+      })
+      .catch(err => {
+        throw new Error("Error saving new Password: " + err);
+      });
+      
+    })
+    .catch(err => {
+      throw new Error("Error saving new username: " + err);
+    });//END GET CURR USER
+
+    
+  })
+  .catch(err => {
+    console.log(err);
+    resp.redirect('/500');
+  });
+  
+
+
+
+};//END POST CHANGE USER PASSWORD
+

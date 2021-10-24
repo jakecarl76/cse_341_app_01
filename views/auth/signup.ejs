@@ -11,14 +11,14 @@
       
       <label for="email">Email</label>
       <input class="<%= input_err_ids.find( id => id === 'email') ? 'invalid' : '' %>"
-      type="email" id="email" name="email" >
+      type="email" id="email" name="email" value="<%= email %>">
 
       <label for="uname">Username</label>
       <input class="<%= input_err_ids.find( id => id === 'uname') ? 'invalid' : '' %>"
-      type="text" id="uname" name="uname" >
+      type="text" id="uname" name="uname"  value="<%= uname %>">
 
       <label for="uimg">Profile Image</label>
-      <input type="text" id="uimg" name="uimg" >
+      <input type="text" id="uimg" name="uimg" value="<%= uimg %>" >
 
       <label for="pword">Password</label>
       <input class="<%= input_err_ids.find( id => id === 'pword') ? 'invalid' : '' %>"

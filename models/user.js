@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const schema = mongoose.Schema;
 
+
 const user_schema = new schema({
   username: {
     type: String,
@@ -58,6 +59,7 @@ user_schema.methods.add_to_cart = function(product) {
   //save to db
   return this.save();
 };
+//END FUNC ADD TO CART
 
 user_schema.methods.del_from_cart = function(product_id)
 { 

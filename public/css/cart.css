@@ -1,7 +1,7 @@
 .cart__list
 {
   list-style: none;
-  border: solid black 1px;
+  border: solid var(--secondary-color) 1px;
   border-radius: 10px;
   padding: 10px;
   width: 90%;
@@ -13,7 +13,7 @@
 .cart__list li
 {
   box-shadow: 5px 5px 3px var(--shadow-color);
-  border: solid black 1px;
+  border: solid var(--secondary-color) 1px;
   padding: 10px;
   margin: 10px;
 }

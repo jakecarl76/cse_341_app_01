@@ -37,7 +37,6 @@
 .card__image
 {
   margin: auto;
-  border: solid black 1px;
   height: 200px;
   width: 200px;
 }
@@ -50,7 +49,6 @@
 
 .product__desc
 {
-  font-family: serif;
   max-width: 300px;
 }
 
@@ -66,24 +64,25 @@
 
 .btn
 {
-  color: var(--main-color);
+  color: var(--txt-color);
+  background-color: var(--main-color);
   font-weight: bold;
-  border: solid var(--main-color) 2px;
+  border: solid var(--secondary-color) 2px;
   border-radius: 3px;
   padding: 3px;
   cursor: pointer;
 }
 .btn:hover
 {
-  background-color: var(--main-color);
+  background-color: var(--secondary-color);
   border: solid var(--main-color) 2px;
-  color: white;
+  color: var(--main-color);
 }
 .btn:active
 {
   border-color: var(--main-color);
   color: var(--main-color);
-  background-color: var(--secondary-color);
+  background-color: var(--active-color);
 }
 
 .big_btn

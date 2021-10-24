@@ -1,0 +1,117 @@
+<%- include('../includes/head.ejs') %>
+<link rel="stylesheet" href='/css/forms.css'>
+<script src='/js/util.js'></script>
+</head>
+<body>
+  <%- include('../includes/nav.ejs') %>
+  <main>
+    <%-include('../includes/msgs.ejs') %>
+
+   
+    <div class="centered-left-aligned">
+       <img class="user_profile_img" src="<%= user_obj.user_img %>" >
+
+      <h1> <%= user_obj.username %> </h1>
+
+      <div>
+        <h2> Email </h2>
+        <p><%= user_obj.email %></p>
+      </div>
+      <div id="email_options">
+        <input type="button" class="" value="Change Email" onclick="toggle_div('email_form');toggle_div('email_options');">
+      </div>
+      <div id="email_form" class="hidden">
+        <form action="/user-profile/change-email" method="post" 
+         onsubmit=" return confirm('Are you sure you want to change your email to '
+                                    + document.getElementById('email').value + '?');">
+          <input type="hidden" name="_csrf" value="<%= csrf_token %>">
+          <label for="email">New Email</label>
+          <input class="<%= input_err_ids.find( id => id === 'email') ? 'invalid' : '' %>"
+          type="email" id="email" name="email" value="<%= user_obj.email %>">
+          <input type="button" class="" value="Cancel" onclick="toggle_div('email_form');toggle_div('email_options');">
+          <input type="submit" class="" value="Change">
+        </form>
+      </div>
+
+      
+      <div>
+        <h2> Username </h2>
+        <p><%= user_obj.username %></p>
+      </div>
+      <div id="uname_options">
+        <input type="button" class="" value="Change Username" onclick="toggle_div('uname_form');toggle_div('uname_options');">
+      </div>
+      <div id="uname_form" class="hidden">
+        <form action="/user-profile/change-username" method="post" 
+         onsubmit=" return confirm('Are you sure you want to change your username to '
+                                   + document.getElementById('uname').value + '?');">
+          <input type="hidden" name="_csrf" value="<%= csrf_token %>">
+          <label for="uname">New Username</label>
+          <input class="<%= input_err_ids.find( id => id === 'uname') ? 'invalid' : '' %>"
+          type="text" id="uname" name="uname" value="<%= user_obj.username %>">
+          <input type="button" class="" value="Cancel" onclick="toggle_div('uname_form');toggle_div('uname_options');">
+          <input type="submit" class="" value="Change">
+        </form>
+      </div>
+
+      
+      <div>
+        <h2>Profile Image</h2>
+        <p><%= user_obj.user_img %></p>
+      </div>
+      <div id="img_options">
+        <input type="button" class="" value="Change Profile Image" onclick="toggle_div('img_form');toggle_div('img_options');">
+      </div>
+      <div id="img_form" class="hidden">
+        <form action="/user-profile/change-img" method="post"
+         onsubmit=" return confirm('Are you sure you want to change your Profile Image?');">
+          <input type="hidden" name="_csrf" value="<%= csrf_token %>">
+          <label for="uimg">New Image URL</label>
+          <input class="<%= input_err_ids.find( id => id === 'uimg') ? 'invalid' : '' %>"
+          type="text" id="uimg" name="uimg" value="<%= user_obj.user_img %>">
+          <input type="button" class="" value="Cancel" onclick="toggle_div('img_form');toggle_div('img_options');">
+          <input type="submit" class="" value="Change">
+        </form>
+      </div>
+      
+
+      <div>
+        <h2>Password</h2>
+      </div>
+      <div id="pwd_options">
+        <input type="button" class="" value="Change Password" onclick="toggle_div('pwd_form');toggle_div('pwd_options');">
+      </div>
+      <div id="pwd_form" class="hidden">
+        <form action="/user-profile/change-pwd" method="post"
+         onsubmit=" return confirm('Are you sure you want to change your password?');">
+          <input type="hidden" name="_csrf" value="<%= csrf_token %>">
+          <div>
+            <label for="curr_pwd">Current Password</label>
+          <input class="<%= input_err_ids.find( id => id === 'curr_pwd') ? 'invalid' : '' %>"
+          type="password" id="curr_pwd" name="curr_pwd">
+          </div>
+          <hr>
+          <div>
+            <label for="pwd">New Password</label>
+          <input class="<%= input_err_ids.find( id => id === 'pwd') ? 'invalid' : '' %>"
+          type="password" id="pwd" name="pwd">
+          </div>
+          <div>
+            <label for="c_pwd">Confirm New Password</label>
+          <input class="<%= input_err_ids.find( id => id === 'c_pwd') ? 'invalid' : '' %>"
+          type="password" id="c_pwd" name="c_pwd">
+          </div>
+          <input type="button" class="" value="Cancel" onclick="toggle_div('pwd_form');toggle_div('pwd_options');">
+          <input type="submit" class="" value="Change">
+        </form>
+      </div>
+
+
+
+
+    </div>
+     
+
+  </main>
+
+<%- include('../includes/end.ejs') %>

@@ -23,15 +23,6 @@
   margin-bottom: 0px;
 }
 
-.users_name img
-{
-  max-width: 2em;
-  max-height: 2em;
-  border-radius: 50%;
-  border: black solid 1px;
-  transform: translateY(50%);
-}
-
 .reviews__list .rating
 {
   font-size: 1.3em;

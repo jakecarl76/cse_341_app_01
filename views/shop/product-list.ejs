@@ -12,8 +12,16 @@
           <header class="card__header">
             <h1 class="product__title"> <%= item.title %> </h1>
           </header>
+          <p class="minor_title">Sold by</p>
+          <div class="sellers_name">
+            <img src="<%= item.user_id.user_img %>" 
+                 alt="<%= item.user_id.username %>'s profile picture"> 
+                 <%= item.user_id.username %>
+          </div>
           <div class="card__image">
-            <img src="<%= item.img_link %>" alt="the product">
+            <a href="/products/<%= item._id %>">
+              <img src="<%= item.img_link %>" alt="the product">
+            </a>
           </div>
           <div class="card__content">
             <h2 class="product__price"> $<%= item.price %></h2>

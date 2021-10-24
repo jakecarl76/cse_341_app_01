@@ -2,7 +2,7 @@
   <nav class="main-header__nav">
     <ul class="main-header__item-list">
       <li class="main-header__item">
-        <a class="<%= path == '/' ? 'active' : '' %>" href="/">Shop</a>
+        <a class="<%= path == '/' ? 'active' : '' %>" href="/">terraVR</a>
       </li>
       <li class="main-header__item">
         <a class="<%= path == '/products' ? 'active' : '' %>" href="/products">Products</a>
@@ -31,6 +31,9 @@
           <input type="hidden" name="_csrf" value="<%= csrf_token %>">
           <input class="link_btn" type="submit" value = "Logout">
         </form>
+      </li>
+      <li class="profile_link">
+        <a href="/user-profile"><img class="user_img" src="<%= user_img %>"></a>
       </li>
       <% } else { %>
         <li class="main-header__item">

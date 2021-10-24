@@ -1,0 +1,7 @@
+<% if (item.stock > 10) { %>
+  <p class="in-stock"> In Stock </p>
+<% } else if(item.stock <= 10 && item.stock > 0 ) { %>
+  <p class="low-stock"> Only <%= item.stock %> left in stock </p>
+<% } else { %>
+  <p class="no-stock"> Out of stock </p>
+<% } %>

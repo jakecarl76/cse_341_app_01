@@ -12,7 +12,7 @@
     <h1><%= item.title %></h1>
     <hr>
     <div>
-      <img src="<%= item.img_link %>" alt="<%= item.title %>">
+      <img class="detail_img" src="<%= item.img_link %>" alt="<%= item.title %>">
     </div>
     <div>
       <% for(let i = 0; i < 5; i++)
@@ -26,6 +26,10 @@
               %><span class="rating">&#9734;</span><%
             }
           } %>
+    </div>
+
+    <div>
+      <%- include('../includes/stock-badge.ejs') %>
     </div>
 
     <h2>$<%= item.price %></h2>
@@ -61,6 +65,14 @@
               <p>
                 <%- review.review %>
               </p>
+              <% if (curr_user_id.toString() == review.user_id._id.toString()) { %>
+                <form action='/product/delete-review/<%= item._id %>' method="POST">
+                  <!-- Include csrf token:-->
+                  <input type="hidden" name="_csrf" value="<%= csrf_token %>">
+                  <input type="hidden" value="<%= review._id %>" name="review_id">
+                  <input type="submit" value="delete this review">
+                </form>
+              <% } %>
             </li>
           <% } %>
         </ul>

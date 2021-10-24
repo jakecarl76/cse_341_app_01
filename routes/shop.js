@@ -20,6 +20,8 @@ router.get('/product/review/:item_id', is_auth, shop_ctrl.get_product_review);
 
 router.post('/product/post-review', is_auth, shop_ctrl.post_product_review);
 
+router.post('/product/delete-review/:item_id', is_auth, shop_ctrl.post_del_review)
+
 router.get('/cart', is_auth, shop_ctrl.get_cart);
 
 router.post('/cart', is_auth, shop_ctrl.post_cart);

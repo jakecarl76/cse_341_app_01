@@ -1,6 +1,11 @@
 <form action="/cart" method="POST">
   <!-- Include csrf token:-->
   <input type="hidden" name="_csrf" value="<%= csrf_token %>">
-  <input type="hidden" name="item_id" value="<%= item._id %>">
-  <button class="big_btn">Add to Cart</button>
+  <% if(item.stock > 0) { %>
+    <input type="hidden" name="item_id" value="<%= item._id %>">
+    <button class="big_btn">Add to Cart</button>
+  <% } else { %>
+    <h2> Out of Stock</h2>
+  <% } %>
+
 </form>

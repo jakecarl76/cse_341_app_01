@@ -104,6 +104,14 @@ app_obj.use((req, resp, next) => {
 app_obj.use( (req, resp, next) => {
   //add general vars to every resp. obj via the resp.locals property:
   resp.locals.is_logged_in = req.session.is_logged_in;
+  if(req.session.user)
+  {
+    resp.locals.user_img = req.session.user.user_img;
+  }
+  else
+  {
+    resp.locals.user_img = "/imgs/user_img.png";
+  }
   resp.locals.err_msg = req.flash('err');
   resp.locals.csrf_token = req.csrfToken();
   next();
@@ -124,7 +132,7 @@ app_obj.use(err_pages.err_404);
 //Special error handling middleware:
 //catches all errors passed by other middlewares to their next() func
 //ie-> next(err_obj);
-app.use((err, req, resp, next) => {
+app_obj.use((err, req, resp, next) => {
   resp.redirect('/500');
 });
 

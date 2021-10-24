@@ -22,7 +22,8 @@ const product_schema = new Schema({
     type: String,
     required: true
   },
-  rating: Number,
+  stock: {type: Number, required: true},
+  rating: {type: Number, default: 0},
   user_id: {
     type: Schema.Types.ObjectId,
     ref: 'User', //ref to the other, user.js model we set up, tells what the obj.id points to

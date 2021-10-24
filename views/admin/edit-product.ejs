@@ -25,34 +25,12 @@
          id="item_desc" name="item_desc"
        ><% if(edit_mode || add_mode){ %><%= item.desc %><% } %></textarea>
 
-      <label for="item_rating_0" class="zero_rating">&#9746;</label>
-      <input type="radio" id="item_rating_0" name="item_rating" class="hidden star_radio" value="0" 
-       <% if(edit_mode || add_mode){ if(item.rating == 0){%> checked <% } }else{ %> checked<% } %> >
-      
-      <label for="item_rating_1" class="star_radio"></label>
-      <input type="radio" id="item_rating_1" name="item_rating" class="hidden star_radio" value="1"
-      <% if(edit_mode || add_mode && item.rating == 1){%> checked <% }%> >
-      
-      <label for="item_rating_2" class="star_radio"></label>
-      <input type="radio" id="item_rating_2" name="item_rating" class="hidden star_radio" value="2"
-      <% if(edit_mode || add_mode && item.rating == 2){%> checked <% }%> >
-      
-      <label for="item_rating_3" class="star_radio"></label>
-      <input type="radio" id="item_rating_3" name="item_rating" class="hidden star_radio" value="3"
-      <% if(edit_mode || add_mode && item.rating == 3){%> checked <% }%> >
-      
-      <label for="item_rating_4" class="star_radio"></label>
-      <input type="radio" id="item_rating_4" name="item_rating" class="hidden star_radio" value="4"
-      <% if(edit_mode || add_mode && item.rating == 4){%> checked <% }%> >
-      
-      <label for="item_rating_5" class="star_radio"></label>
-      <input type="radio" id="item_rating_5" name="item_rating" class="hidden" value="5"
-      <% if(edit_mode || add_mode && item.rating == 5){%> checked <% }%> >
-      
-      <div>
-        <p>Click on a star to rate this product.</p>
-      </div>
-      
+      <label for="item_stock">Stock</label>
+      <input class="<%= input_err_ids.find( id => id === 'item_stock') ? 'invalid' : '' %>"
+       type="number" id="item_stock" name="item_stock" step="1"
+      value="<% if(edit_mode || add_mode){ %><%= item.stock %><% } %>">
+
+     
       <% if(edit_mode || add_mode){%><input type="hidden" name="item_id" value="<%= item._id %>"><% }%>
       <button type="submit"><% if(edit_mode){%>Update<% }else{ %>Add<% } %> Prouduct</button>
     </form>

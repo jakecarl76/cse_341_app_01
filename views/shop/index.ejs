@@ -4,42 +4,47 @@
 <body>
   <%- include('../includes/nav.ejs') %>
   <main>
+    <h1 class="main_title">terraVR</h1>
     <%- include('../includes/msgs.ejs') %>
-    <% if(products.length > 0) { %>
-      <div class="grid">
-        <% for (let item of products) { %>
-        <article class="card">
-          <header class="card__header">
-            <h1 class="product__title"> <%= item.title %> </h1>
-          </header>
-          <div class="card__image">
-            <img src="<%= item.img_link %>" alt="the product">
-          </div>
-          <div class="card__content">
-            <h2 class="product__price"> $<%= item.price %></h2>
-            <p class="product__desc"><%= item.desc %></p>
-          </div>
-          <div>
-            <% for(let i = 0; i < 5; i++)
-                {
-                  if( i < item.rating)
-                  {
-                    %><span class="rating gold_star" >&#9733;</span><%
-                  }
-                  else
-                  {
-                    %><span class="rating">&#9734;</span><%
-                  }
-                } %>
-          </div>
-          <div class="card__actions">
-            <%- include('../includes/add-to-cart.ejs', {item: item}) %>
-          </div>
-        </article> 
-        <% } %>
+
+    <div class="title_page_display">
+      <article class="main_article_left articlebg1">
+        <h2>Jump into a New World</h2>
+        <p>
+          Gaming is no longer a just window into another world. Motion and room scale tracking, high resolution screens, and high-fidelity audio
+          allow you to enter a whole new reality.
+        </p>
+      </article>
+  
+      <article class="main_article_right articlebg2">
+        <h2>A World You Can Reach Out And Touch</h2>
+        <div>
+          <p>
+            Advances in haptic feedback, controller design, and game mechanics
+            help you to feel the virtual world around you like never before.
+          </p>
+        </div>
+      </article>
+      
+      <article class="main_article_left articlebg3">
+        <h2>Find Your Own Piece of the Universe</h2>
+        <p>
+          Virtual reality systems are not just for the dedicated gamers anymore. With more 
+          options that ever before, you can find a system that best fits you.
+        </p>
+      </article>
+
+      <div class="centered title_page_display_land">
+        <a class="big_btn" href="/products">Discover Your Own World</a>
       </div>
-    <% } else { %>
-      <h1>No Products Found</h1>
-    <% } %>
+    </div>
+    
+    
+
+    
+
+
+
+    
   </main>
   <%- include('../includes/end.ejs') %>

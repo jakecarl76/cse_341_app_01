@@ -5,7 +5,7 @@
 
 .order__liset .order
 {
-  border: solid black 1px;
+  border: solid 1px var(--secondary-color);
   border-radius: 10px;
   padding: 10px;
   box-shadow: 5px 5px 3px var(--shadow-color);

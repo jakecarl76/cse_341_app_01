@@ -14,6 +14,7 @@ const escapeText = require('../util/util.js');
  exports.get_products = (req, resp, next) => {
    //mongoose method to replace our old fetch_all() method
   Product.find()
+  .populate('user_id')
   .then( (product_arr) => {
     resp.render('shop/product-list',
       { products: product_arr,
@@ -30,6 +31,7 @@ exports.get_item_details = (req, resp, next) => {
   const item_id = req.params.item_id;
 
   Product.findById(item_id)
+  .populate('user_id')
   .then( (item) => {
     //check for error/handle
     if(item === null)
@@ -62,12 +64,19 @@ exports.get_item_details = (req, resp, next) => {
         }//END IF USER NULL
       }//END FOR EACH REVIEW
       
+    //set user id so curr user's reviews can be deleted
+    let tmp_user = "none";
+    if(req.session.user)
+    {
+      tmp_user = req.session.user._id;
+    }
     //handle item found
     resp.render('shop/product-detail',
     { item: item,
       reviews: reviews,
       page_title: "Details for " + item.title,
-      path: "/products"
+      path: "/products",
+      curr_user_id: tmp_user
     });
 
     })
@@ -110,7 +119,6 @@ exports.post_product_review = (req, resp, next) => {
   let user_rating = Number(req.body.item_rating);
   let user_id = req.user._id;
 
-  console.log("POST REVIEW: " + user_review);
 
   let review = new Review({
     rating: user_rating,
@@ -120,16 +128,132 @@ exports.post_product_review = (req, resp, next) => {
   });
   review.save()
   .then(result => {
-    resp.redirect('/products/' + item_id);
+    //update product with all reviews
+    Product.findById(item_id)
+    .then(item => {
+      //get all reviews for the item
+      Review.find({'product_id' : item_id})
+      .then(reviews => {
+        let rating = 0;
+        let num_revs = reviews.length;
+        //check revies found so don't divide by zero
+        if(num_revs <= 0)
+        {
+          throw new Error ("Error saving review: no reviews were found after save.");
+        }
+        //add up all reviews
+        for(let review of reviews)
+        {
+          rating += review.rating;
+        }
+        //now divide by num revs to get ave
+        rating /= num_revs;
+        //now update product
+        item.rating = Math.round(rating);
+        item.save()
+        .then(result => {
+          resp.redirect('/products/' + item_id);
+         })
+        .catch(err => {
+            throw new Error ("Error saving new rating for " + item_id + ": " + err);
+        });//END SAVE ITEM RATING
+
+
+      })
+      .catch(err => {
+          throw new Error ("Error finding reviews to update product rating for " + item_id + ": " + err);
+      });//END FIND ALL REVIEWS
+    })
+    .catch(err => {
+        throw new Error ("Error updating product rating for " + item_id + ": " + err);
+    });//END FIND PRODUCT TO UPDATE
+
+
   })
   .catch(err => {
     console.log("Error saving review: " + err)
   });
-
-  //dvdvdvdvdv test see if works
-  //need to redirect back to products page after review saved
-  //need to write getting funcs into get product review info/etc
 };//END POST USER"S REIVEW
+
+//delete a user's review
+exports.post_del_review = (req, resp, next) => {
+  //get review and id
+  let review_id = req.body.review_id;
+  let return_item_page = req.params.item_id;
+  //get review in question;
+  Review.findById(review_id)
+  .then(review => {
+    //check that review's id matches current users id
+    if(!req.session.user)
+    {
+      throw new Error("No user signed in");
+    }
+
+    let tmp_user_id = req.session.user._id;
+    if(tmp_user_id.toString() !== review.user_id.toString())
+    {
+      throw new Error ("User is not authorized to delete this review");
+    }
+    //if here review can be deleted
+    Review.findByIdAndRemove(review_id)
+    .then(result => {
+      let item_id = return_item_page;
+
+      //recalc the item rating:
+      Product.findById(item_id)
+      .then(item => {
+        //get all reviews for the item
+        Review.find({'product_id' : item_id})
+        .then(reviews => {
+          let rating = 0;
+          let num_revs = reviews.length;
+          //check revies found so don't divide by zero
+          if(num_revs <= 0)
+          {
+            //no reviews, no need to recalc
+            return resp.redirect('/products/' + return_item_page);
+          }
+          //add up all reviews
+          for(let review of reviews)
+          {
+            rating += review.rating;
+          }
+          //now divide by num revs to get ave
+          rating /= num_revs;
+          //now update product
+          item.rating = Math.round(rating);
+          item.save()
+          .then(result => {
+            //redirect back to the item page:
+            return resp.redirect('/products/' + return_item_page);
+           })
+          .catch(err => {
+              throw new Error ("Error saving new rating for " + item_id + ": " + err);
+          });//END SAVE ITEM RATING
+        })
+        .catch(err => {
+            throw new Error ("Error finding reviews to update product rating for " + item_id + ": " + err);
+        });//END FIND ALL REVIEWS
+      })
+      .catch(err => {
+          throw new Error ("Error updating product rating for " + item_id + ": " + err);
+      });//END FIND PRODUCT TO UPDATE
+      
+    })//END REMOVE ID
+    .catch(err => {
+      throw new Error("Error when trying to delete review: " + err);
+    })
+  })
+  .catch(err => {
+    console.log(err);
+    resp.render('errors/500', {
+      path: '/500',
+      page_title: 'Error 500'
+    });
+  })
+};
+
+
 
 //Cart
 exports.get_cart = (req, resp, next) => {
@@ -152,11 +276,27 @@ exports.post_cart = (req, resp, next) => {
   const item_id = req.body.item_id;
   Product.findById(item_id)
   .then(product => {
+    //first check product is in stock
+    if(product.stock <= 0)
+    {
+      req.flash('err', "Sorry, that product is out of stock.");
+      console.log("Warning! Product out of stock!")
+      return null;
+    }
+
+    //item in stock, make sure to subtract from item stock
+    product.stock -= 1;
+    product.save();
+
     return req.user.add_to_cart(product);
   })
   .then(result => {
     console.log(result);
     resp.redirect('/cart');
+  })
+  .catch(err => {
+    console.log("Error saving product: " + err);
+    resp.redirect('/500');
   });  
 
 };//END POST CART FUNC
@@ -164,13 +304,38 @@ exports.post_cart = (req, resp, next) => {
 exports.post_cart_del_item = (req, resp, next) => {
   //extract given product id
   const product_id = req.body.item_id;
+  //get quantity of item in cart
+  
+  let tmp_item = req.user.cart.items.filter(cart_item => cart_item.product_id.toString() === product_id.toString())
+  let tmp_qnty = tmp_item[0].qnty;
 
   req.user
   .del_from_cart(product_id)
   .then(result => {
-    resp.redirect('/cart');
+    //item deleted from cart, now restor stock
+    //first get the item
+    Product.findOne({_id: product_id})
+    .then(item => {
+      //restor qnty to stock
+      item.stock += Number(tmp_qnty);
+      //save 
+      item.save()
+      .then(result => {
+        //redirect to cart
+        resp.redirect('/cart');
+      })
+      .catch(err => {
+        throw new Error("Error finding product " + product_id + " to restore stock: " + err);
+      });
+    })
+    .catch(err => {
+      throw new Error("Error finding product " + product_id + " to restore stock: " + err);
+    });
   })
-  .catch(err => console.log(err));
+  .catch(err => {
+    console.log(err);
+    resp.redirect('/500');
+  } );
 
 };//END POST_CART_DEL_ITEM
 
