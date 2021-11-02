@@ -18,24 +18,19 @@ exports.get_add_product = (req, resp, next) => {
 
 exports.post_add_product = (req, resp, next) => {
 
-  let tmp_img = req.body.img_link == '' ? '/imgs/default.png' : req.body.img_link;
-  
- /* OLD VALIDATION
-  //check all inputs:
-  if(req.body.title === '')
+  let tmp_img = req.files === undefined ? '/imgs/default.png' : req.files;
+  let other_imgs = [];
+  if(tmp_img !== '/imgs/default.png')
   {
-    req.flash('err', 'The product must be given a title');
+    for(file of tmp_img)
+    {
+      other_imgs.push( ("/imgs/" + file.filename) );
+    }
   }
-  if(Number(req.body.item_price) < 0 || isNaN(Number(req.body.item_price)))
-  { console.log(req.body.item_price + " :ISNAN:  " + isNaN(Number(req.body.item_price)))
-    req.flash('err', 'The product\'s price must be a positive number');
-  }
-  if(req.body.item_desc === '')
+  else
   {
-    req.flash('err', 'The product must be given a description');
+    other_imgs.push(tmp_img);
   }
-
-  END OLD VALIDATION*/
 
   //check for validation errs
   const v_errs = validationResult(req);
@@ -53,7 +48,7 @@ exports.post_add_product = (req, resp, next) => {
     return resp.render('admin/edit-product', 
       { item: {title: req.body.title,
         price: req.body.item_price,
-        img_link: tmp_img,
+        img: tmp_img,
         desc: req.body.item_desc,
         stock: req.body.item_stock},
         page_title: 'Edit A Product',
@@ -67,7 +62,8 @@ exports.post_add_product = (req, resp, next) => {
 
   const product = new Product( {title: req.body.title,
                                price: req.body.item_price,
-                               img_link: tmp_img,
+                               img_link: ('/imgs/' + tmp_img[0].filename),
+                               other_imgs: other_imgs,
                                desc: req.body.item_desc,
                                stock: req.body.item_stock,
                                user_id: req.user._id
@@ -112,13 +108,32 @@ exports.get_edit_product = (req, resp, next) => {
 }
 
 exports.post_edit_product = (req, resp, next) => {
+  let tmp_img = req.files === undefined ? '/imgs/default.png' : req.files;
+  let other_imgs = [];
+  if(tmp_img !== '/imgs/default.png')
+  {
+    for(file of tmp_img)
+    {
+      other_imgs.push( ("/imgs/" + file.filename) );
+    }
+  }
+  else
+  {
+    other_imgs.push(tmp_img);
+  }
+
   //get new fields
   const item_id = req.body.item_id;
   const item_title = req.body.title;
-  const item_img = req.body.img_link;
+  const item_img = req.files;
   const item_price = req.body.item_price;
   const item_desc = req.body.item_desc;
   const item_stock = req.body.item_stock;
+  const change_img = req.body.option_new_cover_img;
+  const new_img_index = req.body.new_cover_img_index;
+
+  console.log(change_img);
+  console.log(new_img_index);
 
   //check for validation errs
   const v_errs = validationResult(req);
@@ -136,7 +151,7 @@ exports.post_edit_product = (req, resp, next) => {
     return resp.render('admin/edit-product', 
       { item: {title: req.body.title,
         price: req.body.item_price,
-        img_link: item_img,
+        //img: item_img,
         desc: req.body.item_desc,
         stock: req.body.item_stock,
         _id: item_id},
@@ -159,11 +174,32 @@ exports.post_edit_product = (req, resp, next) => {
       req.flash('err', 'You\'re not authorized to edit that product.')
       return null;
     }
+
+    //check if cover img changed:
+    let tmp_index = Number(new_img_index)
+    if (change_img && !isNaN(tmp_index))
+    {
+      let new_cover_img = product.other_imgs[tmp_index];
+      product.img_link = new_cover_img;
+      console.log("POO IS HCAHKLHJKLDF");
+    }
+
+
+
     product.title = item_title;
     product.price = item_price;
-    product.img_link = item_img;
     product.desc = item_desc;
     product.stock = item_stock;
+
+    //update if items added
+    if(item_img !== undefined)
+    {
+      for(img of other_imgs){
+        product.other_imgs.push(img);
+      }
+    }
+
+
     return product.save();
   })
   .then(result => {

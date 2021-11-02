@@ -37,6 +37,46 @@ const csrf_middleware = csrf();
 const express = require('express');
 //import parser
 const bodyParser_mod = require('body-parser');
+const multer = require('multer');
+
+
+//MULTER SETUP
+const img_upload_storeage = multer.diskStorage({
+  destination: (req, file, cb_func) => {
+    //could do err checking here
+    //errs could be delivered as first
+    //param of cb_func. if none, pass null
+
+    //call cb func given by multier
+    cb_func(null, './public/imgs');
+  },
+  filename: (req, file, cb_func) => {
+    //could do err checking/etc stuff here
+    //as in destination key (see above)
+    
+    //call cb func given by multier to save img
+    cb_func(null, (Date.now() + '_' + file.originalname) );
+  }
+});//END MULTER STORATE OBJ
+
+const img_file_filter = (req, file, cb_func) => {
+  //can do err checking here/etc
+
+  //file filtering
+  if(  file.mimetype === 'image/png'
+    || file.mimetype === 'image/jpg'
+    || file.mimetype === 'image/jpeg' )
+  {
+    //accept file
+    cb_func(null, true);
+  }
+  else
+  {
+    //refuse file
+    cb_func(null, false);
+  }
+
+};//END MULTER FILE_FILTER FUNC
 
 //import custome middleware routing functions
 const admin_router = require('./routes/admin');
@@ -57,6 +97,9 @@ app_obj.set('views', 'views');
   //object passed to it is its config options --> if it should
   //be able to parse non-default features
 app_obj.use(bodyParser_mod.urlencoded({extended: false}));
+//app_obj.use(multer({dest: './public/imgs'}).single('img'));//for single file upload
+//app_obj.use(multer({dest: './public/imgs'}).array('img', 10));//multiple file upload
+app_obj.use(multer({storage: img_upload_storeage, fileFilter: img_file_filter}).array('img', 10));//multiple file upload
 //express module .static(path_str) --> allows clients to access given path
   //w\out needing an app_obj.use() to grant specific access/serve it
 app_obj.use(express.static(path_mod.join(__dirname, 'public')));

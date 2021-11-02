@@ -5,17 +5,39 @@
   <%- include('../includes/nav.ejs') %>
   <main>
     <%- include('../includes/msgs.ejs') %>
-    <form class="product-form" action='/admin/<% if(edit_mode){ %>edit<% }else{ %>add<% } %>-product' method="POST">
+    <form class="product-form" 
+     action='/admin/<% if(edit_mode){ %>edit<% }else{ %>add<% } %>-product' 
+     method="POST" enctype="multipart/form-data">
       <!-- Include csrf token:-->
       <input type="hidden" name="_csrf" value="<%= csrf_token %>">
       <label for="title">Title</label>
       <input  class="<%= input_err_ids.find( id => id === 'title') ? 'invalid' : '' %>"
        type="text" id="title" name="title"
        value="<% if(edit_mode || add_mode){ %><%= item.title %><% } %>">
-      <label for="img_link">Image Link</label>
-      <input  class="<%= input_err_ids.find( id => id === 'img_link') ? 'invalid' : '' %>"
-       type="text" id="img_link" name="img_link"
-      value="<% if(edit_mode || add_mode){ %><%= item.img_link %><% } %>">
+
+      <% if(edit_mode) { %>
+      
+      <h3> Cover Image </h3>
+      <img src="<%= item.img_link %>">
+
+      <label for="option_new_cover_img">Select New Cover Image: </label>
+      <input type="checkbox" id="option_new_cover_img" name="option_new_cover_img">
+        
+        <% for(let i = 0; i < item.other_imgs.length; i++) { %>
+
+        <input type='radio' class="hidden" id='img_index_<%= i %>' value='<%= i %>' name='new_cover_img_index'
+         oninput="document.getElementById('option_new_cover_img').checked = true;">
+        <label class='selectable_img' for="img_index_<%= i %>"><img src="<%= item.other_imgs[i] %>" alt="<%= item.other_imgs[i] %>"></label>
+
+        <% } %>
+      
+      <% } %>
+
+      <label for="img">Add More Images</label>
+      <input  class="<%= input_err_ids.find( id => id === 'img') ? 'invalid' : '' %>"
+       type="file" id="img" name="img" multiple
+      value="<% if(edit_mode || add_mode){ %><%= item.img %><% } %>">
+
       <label for="item_price">Price</label>
       <input class="<%= input_err_ids.find( id => id === 'item_price') ? 'invalid' : '' %>"
        type="number" id="item_price" name="item_price" step="0.01"

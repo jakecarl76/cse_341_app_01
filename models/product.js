@@ -22,6 +22,7 @@ const product_schema = new Schema({
     type: String,
     required: true
   },
+  other_imgs: [],
   stock: {type: Number, required: true},
   rating: {type: Number, default: 0},
   user_id: {
